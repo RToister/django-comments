@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Створити коментар</title>
+</head>
+<body>
+
+<h1>Новий коментар</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Відправити</button>
+</form>
+
+</body>
+</html>

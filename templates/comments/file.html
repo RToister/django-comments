@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Файл</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<a href="javascript:history.back()" class="button">← Назад</a>
+
+<h2>Файл користувача {{ comment.username }}</h2>
+
+{% if filename %}
+<p><b>Назва файлу:</b> {{ filename }}</p>
+{% endif %}
+
+{% if comment.file %}
+    {% with comment.file.url|lower as f %}
+
+        {% if ".jpg" in f or ".png" in f or ".gif" in f %}
+            <img src="{{ comment.file.url }}" width="400">
+
+        {% elif ".txt" in f %}
+            <pre>
+{{ comment.file.read|safe }}
+            </pre>
+
+        {% else %}
+            <a href="{{ comment.file.url }}">Завантажити файл</a>
+
+        {% endif %}
+
+    {% endwith %}
+{% endif %}
+
+</body>
+</html>

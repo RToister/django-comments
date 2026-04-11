@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Коментарі</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<h1>Список коментарів</h1>
+
+<a href="/comments/create/" class="button">➕ Додати</a>
+
+<table>
+<tr>
+    <th>User</th>
+    <th>Email</th>
+    <th>Text</th>
+    <th>File</th>
+    <th>Date</th>
+    <th></th>
+</tr>
+
+{% for c in page_obj %}
+<tr id="comment-{{ c.id }}">
+    <td>{{ c.username }}</td>
+    <td>{{ c.email }}</td>
+
+    <td>
+        {{ c.text }}
+        <div class="reply">
+            {% include 'comments/replies.html' with replies=c.replies.all %}
+        </div>
+    </td>
+
+    <td>
+        {% if c.file %}
+            <div><b>{{ c.filename }}</b></div>
+
+            {% with c.file.url|lower as f %}
+                {% if ".jpg" in f or ".png" in f or ".gif" in f %}
+                    <a href="/file/{{ c.id }}/">
+                        <img src="{{ c.file.url }}" width="150">
+                    </a>
+                {% elif ".txt" in f %}
+                    <a href="/file/{{ c.id }}/">📄 TXT файл</a>
+                {% else %}
+                    <a href="/file/{{ c.id }}/">📎 Файл</a>
+                {% endif %}
+            {% endwith %}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+
+    <td>{{ c.created_at }}</td>
+
+    <td>
+        <a href="/comments/{{ c.id }}/reply/">Reply</a>
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+</body>
+</html>

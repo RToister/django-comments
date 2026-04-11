@@ -1,0 +1,11 @@
+{% for r in replies %}
+<div class="reply">
+    <b>{{ r.username }}</b> ({{ r.created_at }})<br>
+    {{ r.text }}<br>
+    <a href="/comments/{{ r.id }}/reply/">Reply</a>
+
+    {% if r.replies.all %}
+        {% include 'comments/replies.html' with replies=r.replies.all %}
+    {% endif %}
+</div>
+{% endfor %}

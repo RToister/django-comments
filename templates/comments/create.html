@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Новий коментар</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<h1>Новий коментар</h1>
+
+<a href="/comments/" class="button">← Назад</a>
+
+<form method="post" enctype="multipart/form-data" class="form-box" id="form">
+    {% csrf_token %}
+
+    <label>Username:</label>
+    {{ form.username }}
+    {% if form.username.errors %}<div class="error">{{ form.username.errors }}</div>{% endif %}
+
+    <label>Email:</label>
+    {{ form.email }}
+    {% if form.email.errors %}<div class="error">{{ form.email.errors }}</div>{% endif %}
+
+    <label>Homepage:</label>
+    {{ form.homepage }}
+
+    <label>Text:</label>
+
+    <div>
+        <button type="button" class="button small" onclick="tag('i')">[i]</button>
+        <button type="button" class="button small" onclick="tag('strong')">[strong]</button>
+        <button type="button" class="button small" onclick="tag('code')">[code]</button>
+        <button type="button" class="button small" onclick="linkTag()">[a]</button>
+    </div>
+
+    {{ form.text }}
+    {% if form.text.errors %}<div class="error">{{ form.text.errors }}</div>{% endif %}
+
+    <label>File:</label>
+    {{ form.file }}
+    {% if form.file.errors %}<div class="error">{{ form.file.errors }}</div>{% endif %}
+
+    <label>Captcha:</label>
+    {{ form.captcha }}
+    {% if form.captcha.errors %}<div class="error">{{ form.captcha.errors }}</div>{% endif %}
+
+    <br>
+
+    <button type="button" class="button" onclick="preview()">Preview</button>
+    <button type="submit" class="button">Відправити</button>
+</form>
+
+<h2>Preview:</h2>
+<div id="preview" class="preview-box"></div>
+
+<script>
+function tag(t) {
+    let ta = document.querySelector('textarea');
+    ta.value += `<${t}></${t}>`;
+}
+
+function linkTag() {
+    let ta = document.querySelector('textarea');
+    ta.value += `<a href="" title=""></a>`;
+}
+
+function preview() {
+    const text = document.querySelector('textarea').value;
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch('/comments/preview/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrf
+        },
+        body: new URLSearchParams({text})
+    })
+    .then(r => r.json())
+    .then(d => document.getElementById('preview').innerHTML = d.preview);
+}
+
+// client validation
+document.getElementById('form').addEventListener('submit', function(e){
+    let u = document.querySelector('[name=username]').value;
+    if(!/^[a-zA-Z0-9]+$/.test(u)){
+        alert("Username тільки латиниця і цифри");
+        e.preventDefault();
+    }
+});
+</script>
+
+</body>
+</html>
