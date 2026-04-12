@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Файл</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
@@ -12,19 +13,17 @@
 <h2>Файл користувача {{ comment.username }}</h2>
 
 {% if filename %}
-<p><b>Назва файлу:</b> {{ filename }}</p>
+    <p><b>Назва файлу:</b> {{ filename }}</p>
 {% endif %}
 
 {% if comment.file %}
     {% with comment.file.url|lower as f %}
 
-        {% if ".jpg" in f or ".png" in f or ".gif" in f %}
-            <img src="{{ comment.file.url }}" width="400">
+        {% if ".jpg" in f or ".png" in f or ".gif" in f or ".jpeg" in f %}
+            <img src="{{ comment.file.url }}" width="400" alt="image">
 
         {% elif ".txt" in f %}
-            <pre>
-{{ comment.file.read|safe }}
-            </pre>
+            <pre>{{ content }}</pre>
 
         {% else %}
             <a href="{{ comment.file.url }}">Завантажити файл</a>
@@ -32,6 +31,8 @@
         {% endif %}
 
     {% endwith %}
+{% else %}
+    <p>Файл відсутній</p>
 {% endif %}
 
 </body>

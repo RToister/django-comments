@@ -14,7 +14,15 @@ def index(request):
 def comment_list(request):
     sort = request.GET.get("sort", "-created_at")
 
-    allowed = ["username", "-username", "email", "-email", "created_at", "-created_at"]
+    allowed = [
+        "username",
+        "-username",
+        "email",
+        "-email",
+        "created_at",
+        "-created_at",
+    ]
+
     if sort not in allowed:
         sort = "-created_at"
 
@@ -31,7 +39,9 @@ def comment_list(request):
     page_obj = paginator.get_page(page)
 
     return render(
-        request, "comments/list.html", {"page_obj": page_obj, "current_sort": sort}
+        request,
+        "comments/list.html",
+        {"page_obj": page_obj, "current_sort": sort},
     )
 
 
@@ -61,7 +71,11 @@ def comment_reply(request, pk):
     else:
         form = CommentForm()
 
-    return render(request, "comments/create.html", {"form": form, "parent": parent})
+    return render(
+        request,
+        "comments/create.html",
+        {"form": form, "parent": parent},
+    )
 
 
 def comment_preview(request):
@@ -76,16 +90,32 @@ def comment_preview(request):
         )
 
         return JsonResponse({"preview": clean})
-    return None
+
+    return JsonResponse({"preview": ""})
 
 
 def file_view(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
 
+    content = None
     filename = None
+
     if comment.file:
         filename = os.path.basename(comment.file.name)
 
+        if comment.file.name.lower().endswith(".txt"):
+            try:
+                with comment.file.open("rb") as file:
+                    content = file.read().decode("utf-8")
+            except UnicodeDecodeError:
+                content = "Не вдалося прочитати файл (encoding error)"
+
     return render(
-        request, "comments/file.html", {"comment": comment, "filename": filename}
+        request,
+        "comments/file.html",
+        {
+            "comment": comment,
+            "content": content,
+            "filename": filename,
+        },
     )
