@@ -26,8 +26,22 @@ def comment_list(request):
     if sort not in allowed:
         sort = "-created_at"
 
-    comments = Comment.objects.filter(parent=None).order_by(sort)
+    # 🔥 ФІЛЬТРИ
+    username = request.GET.get("username")
+    email = request.GET.get("email")
 
+    comments = Comment.objects.filter(parent=None)
+
+    if username:
+        comments = comments.filter(username__icontains=username)
+
+    if email:
+        comments = comments.filter(email__icontains=email)
+
+    # 👉 тільки після фільтрів — сортування
+    comments = comments.order_by(sort)
+
+    # 👇 твій код без змін
     for c in comments:
         if c.file:
             c.filename = os.path.basename(c.file.name)
@@ -41,7 +55,10 @@ def comment_list(request):
     return render(
         request,
         "comments/list.html",
-        {"page_obj": page_obj, "current_sort": sort},
+        {
+            "page_obj": page_obj,
+            "current_sort": sort,
+        },
     )
 
 

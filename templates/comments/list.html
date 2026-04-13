@@ -11,13 +11,36 @@
 
 <a href="/comments/create/" class="button">➕ Додати</a>
 
+<form method="get" style="margin: 20px 0;">
+    <input type="text" name="username" placeholder="User"
+           value="{{ request.GET.username }}">
+
+    <input type="text" name="email" placeholder="Email"
+           value="{{ request.GET.email }}">
+
+    <button type="submit">Фільтр</button>
+</form>
+
 <table>
 <tr>
-    <th>User</th>
-    <th>Email</th>
+    <th>
+        <a href="?sort=username&username={{ request.GET.username }}&email={{ request.GET.email }}">User ↑</a>
+        <a href="?sort=-username&username={{ request.GET.username }}&email={{ request.GET.email }}">↓</a>
+    </th>
+
+    <th>
+        <a href="?sort=email&username={{ request.GET.username }}&email={{ request.GET.email }}">Email ↑</a>
+        <a href="?sort=-email&username={{ request.GET.username }}&email={{ request.GET.email }}">↓</a>
+    </th>
+
     <th>Text</th>
     <th>File</th>
-    <th>Date</th>
+
+    <th>
+        <a href="?sort=created_at&username={{ request.GET.username }}&email={{ request.GET.email }}">Date ↑</a>
+        <a href="?sort=-created_at&username={{ request.GET.username }}&email={{ request.GET.email }}">↓</a>
+    </th>
+
     <th></th>
 </tr>
 
@@ -62,6 +85,22 @@
 {% endfor %}
 
 </table>
+
+<div style="margin-top: 20px;">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&sort={{ current_sort }}&username={{ request.GET.username }}&email={{ request.GET.email }}">
+            ⬅ Назад
+        </a>
+    {% endif %}
+
+    <span> Сторінка {{ page_obj.number }} </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&sort={{ current_sort }}&username={{ request.GET.username }}&email={{ request.GET.email }}">
+            Вперед ➡
+        </a>
+    {% endif %}
+</div>
 
 </body>
 </html>
